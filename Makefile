@@ -18,24 +18,24 @@ show_topology:
 
 # Compile and run release executable.
 release%: test%.c
-	$(CC) $(CFLAGS) $(RELEASEFLAGS) $^ -o $@.bin $(CLIBS)
+	$(CC) $(CFLAGS) $(RELEASEFLAGS) $^ -o $@ $(CLIBS)
 
 rrun%: release%
-	time ./$^.bin
+	time ./$^
 
 rrun_daxpy: release_daxpy
-	OMP_NUM_THREADS=1 ./release_daxpy.bin
-	OMP_NUM_THREADS=16 ./release_daxpy.bin
+	OMP_NUM_THREADS=1 ./release_daxpy
+	OMP_NUM_THREADS=16 ./release_daxpy
 
 
 
 # Compile and run debug executable with Arm Forge.
 debug%: test%.c
-	$(CC) $(CFLAGS) $(DEBUGFLAGS) $^ -o $@.bin $(CLIBS)
+	$(CC) $(CFLAGS) $(DEBUGFLAGS) $^ -o $@ $(CLIBS)
 
 drun%: debug%
 	module load ddt/18.0.2; \
-	ddt ./$^.bin
+	ddt ./$^
 
 
 # Generate asm code to look at.
@@ -44,6 +44,6 @@ asm%: test%.c
 
 
 
-# Clean binary files.
+# Clean binary and temporary files.
 clean:
-	rm -rf *~ *.bin
+	rm -rf *~ debug_* release_*
