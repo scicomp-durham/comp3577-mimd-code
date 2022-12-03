@@ -10,10 +10,6 @@ Codes are independent of each other, unless otherwise stated, but I suggest that
 
 + `test_parallel_region.c`: Print from within a parallel section. The code shows interleaved execution and lack of reproducibility.
 
-+ `test_logger_bug.c`: Code that hangs because a `for` loop within a parallel section is not reached by all threads. **Try to fix it!**
-
-+ `test_logger_single_bug.c`: Code that hangs because of an incorrect use of the `#pragma omp single` within a parallel section. **Try to fix it!**
-
 + `test_daxpy.c`: Compute daxpy *z ← α x + y* where *z*, *x*, and *y* are double-precision *n*-vectors and *α* is a double-precision scalar. The code features shared variables, an **unnecessary** `omp barrier`, and a `for` within a `parallel` section.
 
 + `test_ddot_bug.c`: Compute the inner product *z ← x · y* where *z*, *x*, and *y* are double-precision *n*-vectors. Data races prevent this code from computing the correct result.
@@ -26,9 +22,13 @@ Codes are independent of each other, unless otherwise stated, but I suggest that
 
 + `test_ddot_reduce.c`: This attempt to fix `test_ddot_atomic_bug.c` using a reduction operation computes the correct result and has good performance.
 
++ `test_logger_bug.c`: Code that hangs because a `for` loop within a parallel section is not reached by all threads. **Try to fix it!**
+
++ `test_logger_single_bug.c`: Code that hangs because of an incorrect use of the `#pragma omp single` within a parallel section. **Try to fix it!**
+
 ## Compiling and running the code
 
-You can compile these examples using the `make` command—see the `Makefile` for details. Most targets use wildcards, and you should replace the `%` in the target with the name of the C file you want to compile/and or run, without the `test_` prefix and without the `.c` suffix.
+You can compile these examples using the `make` command—see the [Makefile](Makefile) for details. Most targets use wildcards, and you should replace the `%` in the target with the name of the C file you want to compile/and or run, without the `test_` prefix and without the `.c` suffix.
 
 ### Example
 
@@ -44,7 +44,7 @@ Taking the file `test_ddot_bug.c` as a model, you can run the following:
 >> # Compile code without optimizations and with bebugging symbols.
 >> make debug_test_ddot_bug
 >>
->> # Open code in Arm Forge (on Hamilton).
+>> # Open code in Arm Forge (on Hamilton 7).
 >> make drun_test_ddot_bug
 ```
 
