@@ -23,9 +23,16 @@ release%: test%.c
 rrun%: release%
 	time ./$^
 
-rrun_daxpy: release_daxpy
-	OMP_NUM_THREADS=1 ./release_daxpy
-	OMP_NUM_THREADS=16 ./release_daxpy
+release_daxpy_lightweight: test_daxpy.c    # Version with cheap for loops.
+	$(CC) $(CFLAGS) $(RELEASEFLAGS) $^ -o $@ $(CLIBS)
+
+release_daxpy_heavyweight: test_daxpy.c    # Version with expensive for loops.
+	$(CC) $(CFLAGS) $(RELEASEFLAGS) -DUSE_EXPENSIVE_LOOP \
+	$^ -o $@ $(CLIBS) -lm
+
+rrun_daxpy%: release_daxpy%
+	OMP_NUM_THREADS=1 ./$^
+	OMP_NUM_THREADS=16 ./$^
 
 
 

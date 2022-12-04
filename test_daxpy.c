@@ -8,10 +8,25 @@
  * where z, x, y are double-precision n-vectors and
  * alpha is a double-precision scalar.
  */
+
+/* If the macro USE_EXPENSIVE_LOOP is defined at compile time, the operation
+ *     z[i] = alpha * x[i] + y[i];
+ * is replaced by the mathematically equivalent—but computationally more
+ * expensive—formulation
+ *     z[i] = log(exp(alpha * x[i]) * exp(y[i]));
+ * Note that the logarithm and exponential functions require include in the C
+ * math library header and linking against the corresponding library (hence the
+ * -lm flag in the Makefile).
+ */
+
+#ifdef USE_EXPENSIVE_LOOP
+#include <math.h>
+#endif /* #ifdef USE_EXPENSIVE_LOOP */
+
 int main() {
 
   /* Shared variables. */
-  size_t n = 10000000;
+  size_t n = 100000000;
   double *x = malloc(n * sizeof *x);
   double *y = malloc(n * sizeof *y);
   double *z = malloc(n * sizeof *z);
@@ -31,7 +46,11 @@ int main() {
 
     #pragma omp for
     for (int i = 0; i < n; ++i) {
-      z[i] = alpha*x[i] + y[i];
+#ifndef USE_EXPENSIVE_LOOP
+      z[i] = alpha * x[i] + y[i];
+#else
+      z[i] = log(exp(alpha * x[i]) * exp(y[i]));
+#endif /* #ifndef EXPENSIVE_LOOP */
     }
   }
   double time = omp_get_wtime() - start_time;

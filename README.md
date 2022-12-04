@@ -48,15 +48,31 @@ Taking the file `test_ddot_bug.c` as a model, you can run the following:
 >> make drun_test_ddot_bug
 ```
 
-The only exception to this is the code `test_daxpy.c`, since
-```console
->> make rrun_daxpy
+The only exception to this is the code `test_daxpy.c`, which can be compiled with a cheap or with an expensive for loop. The choice between the two version is made by the preprocessor macro `USE_EXPENSIVE_LOOP`: the code uses the natural implementation
+```C
+z[i] = alpha * x[i] + y[i];
 ```
-runs the code produced by
-```console
->> make release_daxpy
+if the macro is not defined, and the mathematically equivalent (but more expensive to compute)
+```C
+z[i] = log(exp(alpha * x[i]) * exp(y[i]));
 ```
-twice, once with 1 and once with 16 OpenMP threads. Unlike all other cases, the runtime is computed using the `omp_get_wtime()` function within the C code, rather than the Unix command `time`.
+if the macro is defined. Note that the latter version requires including the C math library (`#include <math.h>`) and linking the executable against the corresponding library. You can compile the two versions using
+```console
+>> make rrun_daxpy_lightweight
+```
+and
+```console
+>> make rrun_daxpy_heavyweight
+```
+respectively, which run the code compiled with
+```console
+>> make release_daxpy_lightweight
+```
+and
+```console
+>> make release_daxpy_heavyweight
+```
+respectively. The executable is run twice, once with 1 and once with 16 OpenMP threads. Unlike all other cases, the runtime is computed using the `omp_get_wtime()` function within the C code, rather than the Unix command `time`.
 
 ### Node topology
 
