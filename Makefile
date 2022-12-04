@@ -7,6 +7,15 @@ CLIBS=-fopenmp
 
 .PRECIOUS: release* debug*
 
+
+
+# Print node tolopogy using likwid-topology.
+show_topology:
+	module load likwid; \
+	likwid-topology -g | less -S
+
+
+
 # Compile and run release executable.
 release%: test%.c
 	$(CC) $(CFLAGS) $(RELEASEFLAGS) $^ -o $@.bin $(CLIBS)

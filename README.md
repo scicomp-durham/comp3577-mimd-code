@@ -57,3 +57,42 @@ runs the code produced by
 >> make release_daxpy
 ```
 twice, once with 1 and once with 16 OpenMP threads. Unlike all other cases, the runtime is computed using the `omp_get_wtime()` function within the C code, rather than the Unix command `time`.
+
+### Node topology
+
+The target `show_topology` prints a detailed report of the topology of the node currently in use. The code relies on the `liwid-topology` command, which is part of the [LIKWID Performance Tools](https://hpc.fau.de/research/tools/likwid/), a suite of performance analysis tools that is available on Hamilton 7 and 8 via the `likwid` module. Scrolling to the bottom of the report (which will be open with `less -S`), you should see an ASCII along the lines of the following:
+
+```
+Socket 0:
++-----------------------------------------------------------------------------------------+
+| +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ |
+| |    0   | |    1   | |    2   | |    3   | |    4   | |    5   | |    6   | |    7   | |
+| +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ |
+| +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ |
+| |  32 kB | |  32 kB | |  32 kB | |  32 kB | |  32 kB | |  32 kB | |  32 kB | |  32 kB | |
+| +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ |
+| +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ |
+| | 512 kB | | 512 kB | | 512 kB | | 512 kB | | 512 kB | | 512 kB | | 512 kB | | 512 kB | |
+| +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ |
+| +-----------------------------------------+ +-----------------------------------------+ |
+| |                  16 MB                  | |                  16 MB                  | |
+| +-----------------------------------------+ +-----------------------------------------+ |
++-----------------------------------------------------------------------------------------+
+Socket 1:
++-----------------------------------------------------------------------------------------+
+| +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ |
+| |    8   | |    9   | |   10   | |   11   | |   12   | |   13   | |   14   | |   15   | |
+| +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ |
+| +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ |
+| |  32 kB | |  32 kB | |  32 kB | |  32 kB | |  32 kB | |  32 kB | |  32 kB | |  32 kB | |
+| +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ |
+| +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ |
+| | 512 kB | | 512 kB | | 512 kB | | 512 kB | | 512 kB | | 512 kB | | 512 kB | | 512 kB | |
+| +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ +--------+ |
+| +-----------------------------------------+ +-----------------------------------------+ |
+| |                  16 MB                  | |                  16 MB                  | |
+| +-----------------------------------------+ +-----------------------------------------+ |
++-----------------------------------------------------------------------------------------+
+```
+
+Each table represents one socket (two in this example). The four rows of each socket represent cores, L1, L2, and L3 cache, respectively. Each number in the top row represent a hardware thread. In this example, we are a looking at a node with 2 sockets, each socket having eight cores, with simultaneous multi-threading (SMT) disabled. Each core has a dedicated 32kB L1 cache and a dedicated 512 L2 cache, and every group of four processors share a 16MB L3 cache.
