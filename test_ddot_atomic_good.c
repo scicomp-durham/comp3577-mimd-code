@@ -15,7 +15,7 @@ int main() {
   double *y = malloc(n * sizeof *y);
   double s = 0;
   double reference_solution = 0;
-  double tmp = 0;
+  double tmp;
 
   #pragma omp parallel for
   for (int i = 0; i < n; ++i) {
@@ -28,6 +28,7 @@ int main() {
 
   #pragma omp parallel private (tmp)
   {
+    tmp = 0;
     #pragma omp for
     for (int i = 0; i < n; i++)
       tmp += x[i] * y[i];
